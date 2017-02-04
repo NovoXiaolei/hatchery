@@ -1,5 +1,10 @@
-all:
-	@gcc main.c -o hetchery
+all: hetchery
+
+hetchery: main.o
+	@gcc main.o -o hetchery
+
+main.o: main.c
+	@gcc -c main.c
 
 clean:
-	rm hetchery
+	rm *.o hetchery
