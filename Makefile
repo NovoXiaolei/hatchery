@@ -1,10 +1,13 @@
+CC=gcc
+CFLAG=-c -Wall
+
 all: hatchery
 
 hatchery: main.o
-	@gcc main.o -o hatchery
+	@$(CC) main.o -o hatchery
 
 main.o: main.c
-	@gcc -c main.c
+	@$(CC) -c main.c
 
 clean:
 	rm *.o hatchery
