@@ -1,7 +1,7 @@
 CC=gcc
 CFLAG=-c -Wall
 
-all: hatchery
+all: hatchery client
 
 hatchery: main.o
 	@$(CC) main.o -o hatchery -lpthread
