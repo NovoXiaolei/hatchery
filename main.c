@@ -5,13 +5,13 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <pthread.h>
+#include "common.h"
 
 #define BUF_SIZE 100
 #define MAX_CLNT 256
 
 void *handle_clnt(void *arg);
 void send_msg(char *msg, int len);
-void error_handling(char *msg);
 int clnt_cnt = 0;
 int clnt_socks[MAX_CLNT];
 pthread_mutex_t mutx;
@@ -95,8 +95,3 @@ void send_msg(char *msg, int len){
     pthread_mutex_unlock(&mutx);
 }
 
-void error_handling(char *buf){
-    fputs(buf, stderr);
-    fputc('\n', stderr);
-    exit(1);
-}

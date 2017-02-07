@@ -9,5 +9,11 @@ hatchery: main.o
 main.o: main.c
 	@$(CC) -c main.c -lpthread
 
+client: client.o
+	@$(CC) client.o -o client -lpthread
+
+client.o: client.c
+	@$(CC) -c client.c -lpthread
+
 clean:
-	rm *.o hatchery
+	rm *.o hatchery client
