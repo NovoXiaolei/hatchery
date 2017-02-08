@@ -5,6 +5,8 @@
 
 #include "common.h"
 
+#define BUF_SIZE 1024
+
 int main(int argc, char *argv[]){
     int sock;
     struct sockaddr_in serv_addr;
@@ -28,11 +30,19 @@ int main(int argc, char *argv[]){
     if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr))==-1)
         error_handling("connect() error");
 
-    str_len = read(sock, message, sizeof(message)-1);
-    if(str_len==-1)
-        error_handling("read() error!");
+    while(1){
+        fputs("Input message(q to quit):", stdout);
+        fgets(message, BUF_SIZE, stdin);
 
-    printf("Message from server : %s \n", message);
+        if(!strcmp(message, "q\n"))
+            break;
+
+        write(sock, message, strlen(message));
+        str_len = read(sock, message, BUF_SIZE-1);
+        message[str_len]=0;
+        printf("Message from server: %s", message);
+    }
+
     close(sock);
     return 0;
 }

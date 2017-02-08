@@ -27,7 +27,8 @@ int main(int argc, char *argv[])
         printf("Usage : %s <port>\n", argv[0]);
         exit(1);        
     }
-
+    
+    //初始化锁
     pthread_mutex_init(&mutx, NULL);
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
 
@@ -47,6 +48,8 @@ int main(int argc, char *argv[])
 
     while(1){
         clnt_adr_sz = sizeof(clnt_adr);
+
+        //new client accept
         clnt_sock=accept(serv_sock, (struct sockaddr*)&clnt_adr, &clnt_adr_sz);
 
         pthread_mutex_lock(&mutx);
@@ -54,6 +57,7 @@ int main(int argc, char *argv[])
         pthread_mutex_unlock(&mutx);
 
         pthread_create(&t_id, NULL, handle_clnt, (void*)&clnt_sock);
+        //new thread go into background
         pthread_detach(t_id);
         printf("Commected client IP :%s \n", inet_ntoa(clnt_adr.sin_addr));
     }
