@@ -9,6 +9,8 @@
 
 #define BUF_SIZE 100
 #define MAX_CLNT 256
+#define TRUE 1
+#define FALSE 0
 
 void *handle_clnt(void *arg);
 void send_msg(char *msg, int len);
@@ -31,6 +33,11 @@ int main(int argc, char *argv[])
     //初始化锁
     pthread_mutex_init(&mutx, NULL);
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
+    int option;
+    socklen_t optlen;
+    optlen = sizeof(option);
+    option = TRUE;
+    setsockopt(serv_sock, SOL_SOCKET, SO_REUSEADDR, (void*)&option, optlen);
 
     memset(&serv_adr, 0, sizeof(serv_adr));
     serv_adr.sin_family = AF_INET;
@@ -63,7 +70,6 @@ int main(int argc, char *argv[])
     }
 
     close(serv_sock);
-    
 
     printf("Hello, hatchery\n");
     return 0;
