@@ -5,6 +5,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <signal.h>
 #include "common.h"
 
 #define BUF_SIZE 100
@@ -20,6 +21,9 @@ pthread_mutex_t mutx;
 
 int main(int argc, char *argv[])
 {
+    
+    signal(SIGPIPE, SIG_IGN);
+
     int serv_sock, clnt_sock;
     struct sockaddr_in serv_adr;
     struct sockaddr_in clnt_adr;
