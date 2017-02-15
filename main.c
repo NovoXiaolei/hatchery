@@ -21,7 +21,9 @@ pthread_mutex_t mutx;
 
 int main(int argc, char *argv[])
 {
-    
+    //当客户端在挂掉的情况下，如果此时服务端向客户端发送数据
+    //则内核会发送一个SIGPIPE的消息给服务端，而SIGPIPE默认的行为是cut down当前进程
+    //因此服务端则容易crash，一般的操作则是忽略此信号 
     signal(SIGPIPE, SIG_IGN);
 
     int serv_sock, clnt_sock;
