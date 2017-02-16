@@ -1,4 +1,4 @@
-CC=gcc
+CC=gcc -g
 CFLAG=-c -Wall
 MYSQL_INCLUDE=$(shell mysql_config --cflags)
 MYSQL_LIBS=$(shell mysql_config --libs)
