@@ -3,3 +3,5 @@ hatchery
 client
 cscope*.*
 *.swp
+test/mysql_test
+test/select-test
