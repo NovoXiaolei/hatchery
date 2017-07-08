@@ -2,5 +2,6 @@
 hatchery
 cscope*.*
 *.swp
+logger/*.*
 test/mysql_test
 test/select-test
