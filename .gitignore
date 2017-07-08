@@ -1,6 +1,5 @@
 *.o
 hatchery
-client
 cscope*.*
 *.swp
 test/mysql_test
