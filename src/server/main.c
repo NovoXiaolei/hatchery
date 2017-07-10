@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <signal.h>
-#include "common.h"
+#include "../common/common.h"
 
 #define BUF_SIZE 100
 #define MAX_CLNT 256
@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 {
     //当客户端在挂掉的情况下，如果此时服务端向客户端发送数据
     //则内核会发送一个SIGPIPE的消息给服务端，而SIGPIPE默认的行为是cut down当前进程
-    //因此服务端则容易crash，一般的操作则是忽略此信号 
+    //因此服务端则容易crash，一般的操作则是忽略此信号
     signal(SIGPIPE, SIG_IGN);
 
     int serv_sock, clnt_sock;
@@ -33,9 +33,9 @@ int main(int argc, char *argv[])
     pthread_t t_id;
     if( argc!=2 ){
         printf("Usage : %s <port>\n", argv[0]);
-        exit(1);        
+        exit(1);
     }
-    
+
     //初始化锁
     pthread_mutex_init(&mutx, NULL);
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     serv_adr.sin_family = AF_INET;
     serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_adr.sin_port = htons(atoi(argv[1]));
-    
+
     int ret = bind(serv_sock, (struct sockaddr*)&serv_adr, sizeof(serv_adr));
     if(-1 == ret){
         error_handling("bind() error");
