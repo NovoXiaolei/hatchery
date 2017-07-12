@@ -1,7 +1,7 @@
 //Reference to: git@github.com:lattera/mysql.git
 
-#ifndef _MYSQL_UTILS_H
-#define _MYSQL_UTILS_H
+#ifndef MYSQL_UTILS_H
+#define MYSQL_UTILS_H
 
 
 #include <my_global.h>
@@ -35,14 +35,14 @@ void db_print_rows(SQL_ROW *rows);
 MYSQL *db_mysql_connect(MYSQL *mysql){
     mysql_init(mysql);
     mysql_options(mysql, MYSQL_READ_DEFAULT_GROUP, PROG_NAME);
-    
+
     return mysql_real_connect(mysql, "127.0.0.1", "root", "1qaz2wsxE",
-        "room1007", 0, NULL, 0);    
+            "room1007", 0, NULL, 0);
 }
 
 void db_mysql_close(MYSQL *mysql){
     mysql_close(mysql);
-} 
+}
 
 SQL_ROW *db_mysql_run(MYSQL *mysql, const char* statement){
     SQL_ROW *rows = NULL;
@@ -60,7 +60,7 @@ SQL_ROW *db_mysql_run(MYSQL *mysql, const char* statement){
         return NULL;
     }
     res = mysql_store_result(mysql);
-    
+
     if(!(res)){
         goto end;
     }
@@ -69,7 +69,7 @@ SQL_ROW *db_mysql_run(MYSQL *mysql, const char* statement){
     fields = mysql_fetch_fields(res);
 
     while((mysqlrow = mysql_fetch_row(res))){
-        
+
         if (!(row)){
             rows = (SQL_ROW*)calloc(1, sizeof(SQL_ROW));
             if(!(rows))
@@ -85,10 +85,10 @@ SQL_ROW *db_mysql_run(MYSQL *mysql, const char* statement){
         for(i = 0; i < num_fields; i++){
             if(!(row->cols)){
                 row->cols = (SQL_COL*)calloc(1, sizeof(SQL_COL));
-                if( !(row->cols) ) 
+                if( !(row->cols) )
                     goto end;
 
-                col = row->cols;        
+                col = row->cols;
             } else {
                 col->next = (SQL_COL*)calloc(1, sizeof(SQL_COL));
 
@@ -110,7 +110,7 @@ end:
         mysql_free_result(res);
 
     //db_print_rows(rows);
-    
+
     return rows;
 }
 
@@ -122,7 +122,7 @@ int db_mysql_fmt(MYSQL *mysql, DB_OP op, char *buf, size_t bufsz, char *fmt, ...
     va_start(ap, fmt);
     int n = vsnprintf(buf, bufsz, fmt, ap);
     va_end(ap);
-    
+
     printf("sql fmt = %s %d \n", buf, n);
 
     switch(op){
@@ -143,7 +143,7 @@ SQL_ROW * db_mysql_select(MYSQL *mysql, char *buf, size_t bufsz, char *fmt, ...)
     va_start(ap, fmt);
     int n = vsnprintf(buf, bufsz, fmt, ap);
     va_end(ap);
-    
+
     printf("sql fmt = %s %d \n", buf, n);
 
     return db_mysql_run(mysql, buf);
@@ -205,4 +205,5 @@ void db_print_rows(SQL_ROW *rows){
         row = row->next;
     }
 }
+
 #endif

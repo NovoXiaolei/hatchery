@@ -30,9 +30,9 @@ void log_print(char* filename, int line, char *fmt,...)
     int             e;
 
     if(SESSION_TRACKER > 0)
-        fp = fopen ("log.txt","a+");
+        fp = fopen ("../../logger/log.txt","a+");
     else
-        fp = fopen ("log.txt","w");
+        fp = fopen ("../../logger/log.txt","w");
 
     fprintf(fp,"%s ",print_time());
     fprintf(fp,"[%s][line: %d] ",filename,line);
