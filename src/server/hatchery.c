@@ -7,10 +7,49 @@
 #include <signal.h>
 #include "../common/common.h"
 #include "../utils/log.h"
+#include "lua.h"
+#include "lauxlib.h"
 SESSION_TRACKER = 1;
+
+typedef struct config{
+    const char* ip = NULL;
+    int port = 0;
+    const char* log_file = NULL;
+    const char* log_path = NULL;
+}config;
+
+int load_config(const char* config, config* pCon){
+    lua_State *L = luaL_newstate();
+    luaL_openlibs(L);
+    if(luaL_loadfile(L, config) || lua_pcall(L, 0, 0,0))
+        log_print(__FILE__, __LINE__, "cannot run config.file:%s", lua_tostring(L, -1));
+
+    lua_getglobal(L, "ip");
+    lua_getglobal(L, "port");
+    lua_getglobal(L, "log_file");
+    lua_getglobal(L, "log_path");
+
+    pCon->ip = lua_tolstring(L, -4, NULL);
+    pCon->port = lua_tointeger(L, -3);
+    pCon->log_file = lua_tolstring(L, -2, NULL);
+    pCon->log_path = lua_tolstring(L, -1, NULL);
+
+    log_print(__FILE__, __LINE__, "ip = %s\n",pConf->ip);
+    log_print(__FILE__, __LINE__, "port = %d\n",pConf->port);
+    log_print(__FILE__, __LINE__, "log_file = %s\n",pConf->log_file);
+    log_print(__FILE__, __LINE__, "log_path = %s\n",pConf->log_path);
+
+    lua_close(L);
+    return 0;
+}
 
 int main(int argc, char *argv[])
 {
+    config conf;
+    int ret = load_config("../etc/config_server.lua", &conf);
+    if(ret == 0){
+
+    }
 
     signal(SIGPIE, SIG_IGN);
 

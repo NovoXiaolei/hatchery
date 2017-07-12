@@ -25,9 +25,9 @@ char* print_time()
 
 void log_print(char* filename, int line, char *fmt,...)
 {
-    va_list         list;
-    char            *p, *r;
-    int             e;
+    va_list list;
+    char *p, *r;
+    int e;
 
     if(SESSION_TRACKER > 0)
         fp = fopen ("../../logger/log.txt","a+");
