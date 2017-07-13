@@ -1,6 +1,6 @@
 #include "log.h"
 FILE *fp ;
-static int SESSION_TRACKER; //Keeps track of session
+static int SESSION_TRACKER = 1; //Keeps track of session
 
 char* print_time()
 {

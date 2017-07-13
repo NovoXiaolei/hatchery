@@ -7,22 +7,40 @@
 #include <signal.h>
 #include "../common/common.h"
 #include "../utils/log.h"
-#include "lua.h"
-#include "lauxlib.h"
-SESSION_TRACKER = 1;
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
 
-typedef struct config{
-    const char* ip = NULL;
-    int port = 0;
-    const char* log_file = NULL;
-    const char* log_path = NULL;
+typedef struct Config{
+    const char* ip;
+    int port;
+    const char* log_file;
+    const char* log_path;
 }config;
 
-int load_config(const char* config, config* pCon){
-    lua_State *L = luaL_newstate();
-    luaL_openlibs(L);
-    if(luaL_loadfile(L, config) || lua_pcall(L, 0, 0,0))
-        log_print(__FILE__, __LINE__, "cannot run config.file:%s", lua_tostring(L, -1));
+enum{
+    TRUE = 0,
+    FALSE = 1
+};
+
+int load_config(const char *pchConfig, config *pCon){
+    lua_State *L = lua_open();
+    luaopen_base(L);
+    luaopen_table(L);
+    luaopen_io(L);
+    luaopen_string(L);
+    luaopen_math(L);
+
+    FILE *fp = fopen(pchConfig, "rb");
+    fseek(fp, 0, SEEK_END);
+    long fsize = ftell(fp);
+    fseek(fp, 0, SEEK_SET);
+    char *string = malloc(fsize+1);
+    fread(string, fsize, 1, fp);
+    fclose(fp);
+    string[fsize]=0;
+    if(luaL_loadbuffer(L, string, strlen(string), "line") || lua_pcall(L, 0, 0,0))
+        LOG_PRINT("cannot run config.file:%s", lua_tostring(L, -1));
 
     lua_getglobal(L, "ip");
     lua_getglobal(L, "port");
@@ -34,10 +52,10 @@ int load_config(const char* config, config* pCon){
     pCon->log_file = lua_tolstring(L, -2, NULL);
     pCon->log_path = lua_tolstring(L, -1, NULL);
 
-    log_print(__FILE__, __LINE__, "ip = %s\n",pConf->ip);
-    log_print(__FILE__, __LINE__, "port = %d\n",pConf->port);
-    log_print(__FILE__, __LINE__, "log_file = %s\n",pConf->log_file);
-    log_print(__FILE__, __LINE__, "log_path = %s\n",pConf->log_path);
+    LOG_PRINT("ip = %s\n",pCon->ip);
+    LOG_PRINT("port = %d\n",pCon->port);
+    LOG_PRINT("log_file = %s\n",pCon->log_file);
+    LOG_PRINT("log_path = %s\n",pCon->log_path);
 
     lua_close(L);
     return 0;
@@ -47,16 +65,16 @@ int main(int argc, char *argv[])
 {
     config conf;
     int ret = load_config("../etc/config_server.lua", &conf);
-    return 0
+    return 0;
 
-    signal(SIGPIE, SIG_IGN);
+    signal(SIGPIPE, SIG_IGN);
 
     int serv_sock;
     struct sockaddr_in serv_adr;
 
     if (argc !=2 ) {
-        log_print(__FILE__, __LINE__, "Usage : %s <port>\n", argv[0]);
-        exit(1)
+        LOG_PRINT("Usage : %s <port>\n", argv[0]);
+        exit(1);
     }
 
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
@@ -70,7 +88,7 @@ int main(int argc, char *argv[])
     serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
     serv_adr.sin_port = htons(atoi(argv[1]));
 
-    int ret = bind(serv_sock, (struct sockaddr*)&serv_adr, sizeof(serv_adr));
+    ret = bind(serv_sock, (struct sockaddr*)&serv_adr, sizeof(serv_adr));
     if(-1==ret){
         error_handling("listen error");
     }
