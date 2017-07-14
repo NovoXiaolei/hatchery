@@ -7,6 +7,7 @@
 #include <signal.h>
 #include "../common/common.h"
 #include "../utils/log.h"
+
 #include <lua.h>
 #include <lualib.h>
 #include <lauxlib.h>
@@ -24,12 +25,15 @@ enum{
 };
 
 int load_config(const char *pchConfig, config *pCon){
-    lua_State *L = lua_open();
+    lua_State *L = luaL_newstate();
+    luaL_openlibs(L);
+    /*
     luaopen_base(L);
     luaopen_table(L);
     luaopen_io(L);
     luaopen_string(L);
     luaopen_math(L);
+    */
 
     FILE *fp = fopen(pchConfig, "rb");
     fseek(fp, 0, SEEK_END);

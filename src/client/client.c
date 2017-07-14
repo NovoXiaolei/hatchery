@@ -1,9 +1,12 @@
+#ifndef CLIENT_H
+#define CLIENT_H
+
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-#include "common.h"
+#include "../common/common.h"
 
 #define BUF_SIZE 1024
 
@@ -46,3 +49,5 @@ int main(int argc, char *argv[]){
     close(sock);
     return 0;
 }
+
+#endif
