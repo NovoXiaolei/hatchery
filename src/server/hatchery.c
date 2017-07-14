@@ -26,6 +26,9 @@ enum{
 
 int load_config(const char *pchConfig, config *pCon){
     lua_State *L = luaL_newstate();
+    if (NULL == L)
+        return -1;
+
     luaL_openlibs(L);
     /*
     luaopen_base(L);

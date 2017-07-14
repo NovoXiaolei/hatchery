@@ -9,10 +9,10 @@ VPATH=src:src/client:src/common:src/server:src/utils
 all: hatchery client
 
 hatchery: hatchery.o log.o
-	$(CC) hatchery.o log.o -o hatchery -I$(LUA_INCLUDE) -lm -llua $(LUA_LIB) -ldl
+	$(CC) hatchery.o log.o -o hatchery
 
 hatchery.o: hatchery.c log.h
-	$(CC) $(CFLAG) $< -o hatchery.o -I$(LUA_INCLUDE) -lm -llua $(LUA_LIB) -ldl
+	$(CC) $(CFLAG) $< -o hatchery.o -lm $(LUA_LIB) -ldl
 
 log.o: log.c log.h
 	$(CC)  $(CFLAG) $< -o log.o
