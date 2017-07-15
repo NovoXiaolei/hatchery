@@ -1,27 +1,27 @@
-CC=gcc -g
-CFLAG=-c -Wall
+CC=gcc
+CFLAG= -g -Wall -lm -ldl -I$(LUA_INCLUDE) 
 MYSQL_INCLUDE=$(shell mysql_config --cflags)
 MYSQL_LIBS=$(shell mysql_config --libs)
-LUA_INCLUDE=/usr/local/include
-LUA_LIB=/usr/local/lib/liblua.a
+LUA_INCLUDE=lua
+LUA_LIB=lua/liblua.a
 VPATH=src:src/client:src/common:src/server:src/utils
 
 all: hatchery client
 
 hatchery: hatchery.o log.o
-	$(CC) hatchery.o log.o -o hatchery
+	$(CC) $(CFLAG) $^ -o $@ $(LUA_LIB)
 
-hatchery.o: hatchery.c log.h
-	$(CC) $(CFLAG) $< -o hatchery.o -lm $(LUA_LIB) -ldl
+hatchery.o: hatchery.c common.h log.h
+	$(CC) $(CFLAG) -c $< 
 
 log.o: log.c log.h
-	$(CC)  $(CFLAG) $< -o log.o
+	$(CC) -c  $<
 
 client: client.o
-	$(CC) client.o -o client  -ldl -lm
+	$(CC) client.o -o client
 
 client.o: client.c common.h
-	$(CC) $(CFLAG) $< -o client.o -ldl
+	$(CC) -c $<
 
 .PHONY : clean
 clean:

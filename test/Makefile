@@ -1,9 +1,8 @@
-CC=gcc -g
-CFLAG=-c -Wall
-MYSQL_INCLUDE=$(shell mysql_config --cflags)
-MYSQL_LIBS=$(shell mysql_config --libs)
+CC=gcc 
+CFLAG= -g -Wall
+VPATH = ../src:../src/utils:../src/common
 
-all: select-test mysql_test
+all: select-test log_test
 
 select-test: select-test.o 
 	@$(CC)  select-test.o -o select-test
@@ -11,10 +10,10 @@ select-test: select-test.o
 select-test.o: select-test.c
 	@$(CC) -c select-test.c 
 
-mysql_test: mysql_test.c
-	@$(CC) $(MYSQL_INCLUDE) mysql_test.c -o  mysql_test $(MYSQL_LIBS)
+log_test: log_test.c log.c log.h
+	$(CC) $(CFLAG) $^ -o $@  -I../src/utils
 
 
 clean:
-	rm *.o select-test mysql_test
+	rm *.o select-test log_test
 

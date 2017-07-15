@@ -19,6 +19,7 @@ char* print_time()
     memset(buf, 0x0, size);
     snprintf(buf,size,"[%s]", timestr);
 
+    printf("%s\n", buf);
     return buf;
 }
 

@@ -8,9 +8,9 @@
 #include "../common/common.h"
 #include "../utils/log.h"
 
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
+#include "lua.h"
+#include "lualib.h"
+#include "lauxlib.h"
 
 typedef struct Config{
     const char* ip;
@@ -38,7 +38,10 @@ int load_config(const char *pchConfig, config *pCon){
     luaopen_math(L);
     */
 
-    FILE *fp = fopen(pchConfig, "rb");
+    FILE *fp = fopen(pchConfig, "r");
+    if( fp == NULL)
+        return -1;
+
     fseek(fp, 0, SEEK_END);
     long fsize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
@@ -71,7 +74,7 @@ int load_config(const char *pchConfig, config *pCon){
 int main(int argc, char *argv[])
 {
     config conf;
-    int ret = load_config("../etc/config_server.lua", &conf);
+    int ret = load_config("src/etc/config_server.lua", &conf);
     return 0;
 
     signal(SIGPIPE, SIG_IGN);
