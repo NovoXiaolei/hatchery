@@ -1,6 +1,7 @@
 #include "log.h"
+#include <errno.h>
 FILE *fp ;
-static int SESSION_TRACKER = 1; //Keeps track of session
+static int SESSION_TRACKER = 0; //Keeps track of session
 
 char* print_time()
 {
@@ -19,10 +20,8 @@ char* print_time()
     memset(buf, 0x0, size);
     snprintf(buf,size,"[%s]", timestr);
 
-    printf("%s\n", buf);
     return buf;
 }
-
 
 void log_print(char* filename, int line, char *fmt,...)
 {
@@ -31,9 +30,14 @@ void log_print(char* filename, int line, char *fmt,...)
     int e;
 
     if(SESSION_TRACKER > 0)
-        fp = fopen ("../../logger/log.txt","a+");
+        fp = fopen ("logger/log.txt","a+");
     else
-        fp = fopen ("../../logger/log.txt","w");
+        fp = fopen ("logger/log.txt","w+");
+
+    if (fp == NULL){
+        perror("fp is null due to");
+        //printf("fp is null, error = %s\n", (char*)strerror(errno));
+    }
 
     fprintf(fp,"%s ",print_time());
     fprintf(fp,"[%s][line: %d] ",filename,line);

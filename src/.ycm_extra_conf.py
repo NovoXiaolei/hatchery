@@ -79,9 +79,9 @@ flags = [
 './tests/gmock',
 '-isystem',
 './tests/gmock/include',
-'common',
+'-Icommon',
 'utils',
-'../lua'
+'../lua',
 ]
 
 

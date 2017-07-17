@@ -5,8 +5,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <signal.h>
-#include "../common/common.h"
-#include "../utils/log.h"
+#include "common.h"
+#include "log.h"
 
 #include "lua.h"
 #include "lualib.h"
@@ -31,16 +31,18 @@ int load_config(const char *pchConfig, config *pCon){
 
     luaL_openlibs(L);
     /*
-    luaopen_base(L);
-    luaopen_table(L);
-    luaopen_io(L);
-    luaopen_string(L);
-    luaopen_math(L);
-    */
+       luaopen_base(L);
+       luaopen_table(L);
+       luaopen_io(L);
+       luaopen_string(L);
+       luaopen_math(L);
+       */
 
     FILE *fp = fopen(pchConfig, "r");
-    if( fp == NULL)
+    if( fp == NULL){
+        perror("open config lua failed : ");
         return -1;
+    }
 
     fseek(fp, 0, SEEK_END);
     long fsize = ftell(fp);
@@ -75,17 +77,11 @@ int main(int argc, char *argv[])
 {
     config conf;
     int ret = load_config("src/etc/config_server.lua", &conf);
-    return 0;
 
     signal(SIGPIPE, SIG_IGN);
 
     int serv_sock;
     struct sockaddr_in serv_adr;
-
-    if (argc !=2 ) {
-        LOG_PRINT("Usage : %s <port>\n", argv[0]);
-        exit(1);
-    }
 
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
     int option;
@@ -96,12 +92,18 @@ int main(int argc, char *argv[])
     memset(&serv_adr, 0, sizeof(serv_adr));
     serv_adr.sin_family = AF_INET;
     serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
-    serv_adr.sin_port = htons(atoi(argv[1]));
+    serv_adr.sin_port = htons(conf.port);
 
     ret = bind(serv_sock, (struct sockaddr*)&serv_adr, sizeof(serv_adr));
     if(-1==ret){
-        error_handling("listen error");
+        LOG_PRINT("bind error, errno = %d\n", errno);
     }
+
+    ret = listen(serv_sock, 5);
+    if (ret == -1 ){
+        LOG_PRINT("listen error, errno=%d\n", errno);
+    }
+
 
 
     return 0;
