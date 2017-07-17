@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
-#include <arpa/inet.h>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/wait.h>
+#include <arpa/inet.h>
+#include <errno.h>
 #include "common.h"
 #include "log.h"
 
@@ -23,6 +25,10 @@ enum{
     TRUE = 0,
     FALSE = 1
 };
+
+#define BUF_SIZE 30
+
+void read_childproc(int sig);
 
 int load_config(const char *pchConfig, config *pCon){
     lua_State *L = luaL_newstate();
@@ -47,12 +53,15 @@ int load_config(const char *pchConfig, config *pCon){
     fseek(fp, 0, SEEK_END);
     long fsize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
-    char *string = (char*)malloc(fsize+1);
-    fread(string, fsize, 1, fp);
+    char *string = (char*)malloc( (unsigned long)fsize+ 1);
+    fread(string, (unsigned long)fsize, 1, fp);
     fclose(fp);
     string[fsize]=0;
-    if(luaL_loadbuffer(L, string, strlen(string), "line") || lua_pcall(L, 0, 0,0))
-        LOG_PRINT("cannot run config.file:%s", lua_tostring(L, -1));
+    if(luaL_loadbuffer(L, string, strlen(string), "line") || lua_pcall(L, 0, 0,0)){
+        LOG_PRINT("cannot run config.file:%s\n", lua_tostring(L, -1));
+    }
+
+
 
     lua_getglobal(L, "ip");
     lua_getglobal(L, "port");
@@ -60,11 +69,11 @@ int load_config(const char *pchConfig, config *pCon){
     lua_getglobal(L, "log_path");
 
     pCon->ip = lua_tolstring(L, -4, NULL);
-    pCon->port = lua_tointeger(L, -3);
+    pCon->port = (int)lua_tointeger(L, -3);
     pCon->log_file = lua_tolstring(L, -2, NULL);
     pCon->log_path = lua_tolstring(L, -1, NULL);
 
-    LOG_PRINT("ip = %s\n", pCon->ip);
+    LOG_PRINT("ip = %s\n",  pCon->ip);
     LOG_PRINT("port = %d\n", pCon->port);
     LOG_PRINT("log_file = %s\n", pCon->log_file);
     LOG_PRINT("log_path = %s\n", pCon->log_path);
@@ -80,14 +89,26 @@ int main(int argc, char *argv[])
 
     signal(SIGPIPE, SIG_IGN);
 
-    int serv_sock;
-    struct sockaddr_in serv_adr;
+    int serv_sock, clnt_sock;
+    struct sockaddr_in serv_adr, clnt_adr;
+    pid_t pid;
+    int str_len;
+
+    struct sigaction act;
+    act.sa_handler = read_childproc;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = 0;
+    int state = sigaction(SIGCHLD, &act, 0);
+
+    char buf[BUF_SIZE];
+    socklen_t adr_sz;
 
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
     int option;
     socklen_t optlen;
     optlen = sizeof(option);
     option = TRUE;
+
     setsockopt(serv_sock, SOL_SOCKET, SO_REUSEADDR, (void*)&option, optlen);
     memset(&serv_adr, 0, sizeof(serv_adr));
     serv_adr.sin_family = AF_INET;
@@ -104,7 +125,42 @@ int main(int argc, char *argv[])
         LOG_PRINT("listen error, errno=%d\n", errno);
     }
 
+    while(1){
+        adr_sz = sizeof(clnt_adr);
+        clnt_sock = accept(serv_sock, (struct sockaddr*)&clnt_adr, &adr_sz);
+        if(clnt_sock==-1)
+            continue;
+        else
+            LOG_PRINT("new client connected");
+        pid = fork();
+        if (pid == -1){
+            close(clnt_sock);
+            continue;
+        }
+
+        if(pid==0){
+            //子进程中运行
+            close(serv_sock);
+            while((str_len==read(clnt_sock, buf, BUF_SIZE))!=0){
+                write(clnt_sock, buf, str_len);
+            }
+
+            close(clnt_sock);
+            LOG_PRINT("client disconnected");
+            return 0;
+        }
+        else
+            close(clnt_sock);
+    }
 
 
+    close(serv_sock);
     return 0;
+}
+
+void read_childproc(int sig){
+    pid_t pid;
+    int status;
+    pid = waitpid(-1, &status, WNOHANG);
+    LOG_PRINT("remove proc id :%d \n", pid);
 }
