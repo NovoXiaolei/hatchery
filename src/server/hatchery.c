@@ -45,7 +45,7 @@ int load_config(const char *pchConfig, config *pCon){
     fseek(fp, 0, SEEK_END);
     long fsize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
-    char *string = malloc(fsize+1);
+    char *string = (char*)malloc(fsize+1);
     fread(string, fsize, 1, fp);
     fclose(fp);
     string[fsize]=0;
@@ -62,10 +62,10 @@ int load_config(const char *pchConfig, config *pCon){
     pCon->log_file = lua_tolstring(L, -2, NULL);
     pCon->log_path = lua_tolstring(L, -1, NULL);
 
-    LOG_PRINT("ip = %s\n",pCon->ip);
-    LOG_PRINT("port = %d\n",pCon->port);
-    LOG_PRINT("log_file = %s\n",pCon->log_file);
-    LOG_PRINT("log_path = %s\n",pCon->log_path);
+    LOG_PRINT("ip = %s\n", pCon->ip);
+    LOG_PRINT("port = %d\n", pCon->port);
+    LOG_PRINT("log_file = %s\n", pCon->log_file);
+    LOG_PRINT("log_path = %s\n", pCon->log_path);
 
     lua_close(L);
     return 0;
