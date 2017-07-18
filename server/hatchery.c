@@ -78,6 +78,7 @@ int load_config(const char *pchConfig, config *pCon){
     LOG_PRINT("log_file = %s\n", pCon->log_file);
     LOG_PRINT("log_path = %s\n", pCon->log_path);
 
+
     lua_close(L);
     return 0;
 }
