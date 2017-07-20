@@ -48,7 +48,8 @@ int load_config(const char *pchConfig, config *pCon){
 
     FILE *fp = fopen(pchConfig, "r");
     if( fp == NULL){
-        perror("open config lua failed : ");
+        printf("%s\n",pchConfig);
+        perror("open config lua failed :");
         return -1;
     }
 
@@ -87,7 +88,7 @@ int main(int argc, char *argv[])
 {
     config conf;
 
-    int ret = load_config("../etc/config_server.lua", &conf);
+    int ret = load_config("etc/config_server.lua", &conf);
 
     signal(SIGPIPE, SIG_IGN);
 

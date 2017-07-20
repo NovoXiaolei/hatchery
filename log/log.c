@@ -2,6 +2,11 @@
 #include <errno.h>
 FILE *fp ;
 static int SESSION_TRACKER = 0; //Keeps track of session
+static char* LOG_PATH = NULL;
+
+void set_log_path(char *log_path){
+    LOG_PATH = log_path;
+}
 
 char* print_time()
 {
@@ -29,10 +34,11 @@ void log_print(char* filename, int line, char *fmt,...)
     char *p, *r;
     int e;
 
+
     if(SESSION_TRACKER > 0)
-        fp = fopen ("../logger/log.txt","a+");
+        fp = fopen ("logger/log.txt","a+");
     else
-        fp = fopen ("../logger/log.txt","w+");
+        fp = fopen ("logger/log.txt","w+");
 
     if (fp == NULL){
         perror("fp is null due to");

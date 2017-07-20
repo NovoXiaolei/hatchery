@@ -6,7 +6,8 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-#include "../common/common.h"
+#include "common.h"
+#include "log.h"
 
 #define BUF_SIZE 1024
 
@@ -23,7 +24,7 @@ int main(int argc, char *argv[]){
 
     sock = socket(PF_INET, SOCK_STREAM, 0);
     if(sock==-1)
-        error_handling("socket() error");
+        LOG_PRINT("socket() error");
 
     memset(&serv_addr, 0, sizeof(serv_addr));
     serv_addr.sin_family = AF_INET;
@@ -31,7 +32,7 @@ int main(int argc, char *argv[]){
     serv_addr.sin_port=htons(atoi(argv[2]));
 
     if(connect(sock, (struct sockaddr*)&serv_addr, sizeof(serv_addr))==-1)
-        error_handling("connect() error");
+        LOG_PRINT("connect() error");
 
     while(1){
         fputs("Input message(q to quit):", stdout);
@@ -43,7 +44,7 @@ int main(int argc, char *argv[]){
         write(sock, message, strlen(message));
         str_len = read(sock, message, BUF_SIZE-1);
         message[str_len]=0;
-        printf("Message from server: %s", message);
+        LOG_PRINT("Message from server: %s", message);
     }
 
     close(sock);
