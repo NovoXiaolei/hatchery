@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.0)
 project(hatchery)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -O2 -ldl -lm -pthread")
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/../)
+set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/../bin)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/../lib)
 
 include_directories("${PROJECT_SOURCE_DIR}")
 
