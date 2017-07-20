@@ -36,9 +36,9 @@ void log_print(char* filename, int line, char *fmt,...)
 
 
     if(SESSION_TRACKER > 0)
-        fp = fopen ("logger/log.txt","a+");
+        fp = fopen ("../logger/log.txt","a+");
     else
-        fp = fopen ("logger/log.txt","w+");
+        fp = fopen ("../logger/log.txt","w+");
 
     if (fp == NULL){
         perror("fp is null due to");

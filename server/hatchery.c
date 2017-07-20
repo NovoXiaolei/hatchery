@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
 {
     config conf;
 
-    int ret = load_config("etc/config_server.lua", &conf);
+    int ret = load_config("../etc/config_server.lua", &conf);
 
     signal(SIGPIPE, SIG_IGN);
 
