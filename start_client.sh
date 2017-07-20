@@ -1,2 +1,3 @@
-#!usr/bin/bash
-./client 127.0.0.1 2333
+#!/bin/bash
+./bin/client ./etc/config_client.lua
+tail -n0 -F logger/log_client.txt

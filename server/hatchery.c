@@ -16,13 +16,6 @@
 #include "lauxlib.h"
 
 
-typedef struct Config{
-    const char* ip;
-    int port;
-    const char* log_file;
-    const char* log_path;
-}config;
-
 enum{
     TRUE = 0,
     FALSE = 1
@@ -74,11 +67,6 @@ int load_config(const char *pchConfig, config *pCon){
     pCon->log_file = lua_tolstring(L, -2, NULL);
     pCon->log_path = lua_tolstring(L, -1, NULL);
 
-    LOG_PRINT("ip = %s\n",  pCon->ip);
-    LOG_PRINT("port = %d\n", pCon->port);
-    LOG_PRINT("log_file = %s\n", pCon->log_file);
-    LOG_PRINT("log_path = %s\n", pCon->log_path);
-
 
     lua_close(L);
     return 0;
@@ -88,7 +76,10 @@ int main(int argc, char *argv[])
 {
     config conf;
 
-    int ret = load_config("../etc/config_server.lua", &conf);
+    if (argv[1] == NULL)
+        LOG_PRINT("config file is invalid");
+    char *config_file = argv[1];
+    int ret = load_config(config_file, &conf);
 
     signal(SIGPIPE, SIG_IGN);
 

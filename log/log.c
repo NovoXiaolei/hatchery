@@ -1,5 +1,6 @@
 #include "log.h"
 #include <errno.h>
+#include <utils.h>
 FILE *fp ;
 static int SESSION_TRACKER = 0; //Keeps track of session
 static char* LOG_PATH = NULL;
@@ -35,10 +36,17 @@ void log_print(char* filename, int line, char *fmt,...)
     int e;
 
 
+    char *work_dir = get_current_dir_name();
+    char *log_path = NULL;
+    size_t len;
+    len = strcat2(&log_path, "../", NULL);
+    if (log_path==NULL)
+        return;
+    printf("log_path == %s\n", log_path);
     if(SESSION_TRACKER > 0)
-        fp = fopen ("../logger/log.txt","a+");
+        fp = fopen ("./logger/log.txt","a+");
     else
-        fp = fopen ("../logger/log.txt","w+");
+        fp = fopen ("./logger/log.txt","w+");
 
     if (fp == NULL){
         perror("fp is null due to");

@@ -1,2 +1,3 @@
-#!usr/bin/bash
-./hatchery 2333
+#!/bin/bash
+./bin/hatchery ./etc/config_server.lua
+tail -n0 -F logger/log.txt
