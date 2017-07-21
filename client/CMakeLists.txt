@@ -12,13 +12,15 @@ include_directories("${PROJECT_SOURCE_DIR}")
 include_directories(../common)
 include_directories(../log)
 include_directories(../lua)
+include_directories(../utils)
 
 link_directories(../lua)
 add_library(LogFunctions STATIC ../log/log.c)
+add_library(UtilsFunctions STATIC ../utils/utils.c)
 
 aux_source_directory(. DIR_SRCS)
 
 add_executable(client client.c)
 
-target_link_libraries(client lua LogFunctions )
+target_link_libraries(client lua LogFunctions UtilsFunctions)
 
