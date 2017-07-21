@@ -47,7 +47,6 @@ int load_config(const char *pchConfig, config *pCon){
     pCon->ip = lua_tolstring(L, -4, NULL);
     pCon->port = (int)lua_tointeger(L, -3);
     pCon->log_file = lua_tolstring(L, -2, NULL);
-    pCon->log_path = lua_tolstring(L, -1, NULL);
 
     lua_close(L);
     return 0;
@@ -65,6 +64,8 @@ int main(int argc, char *argv[]){
     config config;
     char *config_fie = argv[1];
     int ret = load_config(argv[1], &config);
+
+    set_log_file(config.log_file);
 
     sock = socket(PF_INET, SOCK_STREAM, 0);
     if(sock==-1)

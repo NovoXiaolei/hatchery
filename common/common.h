@@ -6,10 +6,9 @@
 #include <string.h>
 
 typedef struct Config{
-    const char* ip;
+    char* ip;
     int port;
-    const char* log_file;
-    const char* log_path;
+    char* log_file;
 }config;
 
 void error_handling(char *message){

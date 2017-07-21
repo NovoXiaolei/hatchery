@@ -60,12 +60,10 @@ int load_config(const char *pchConfig, config *pCon){
     lua_getglobal(L, "ip");
     lua_getglobal(L, "port");
     lua_getglobal(L, "log_file");
-    lua_getglobal(L, "log_path");
 
-    pCon->ip = lua_tolstring(L, -4, NULL);
-    pCon->port = (int)lua_tointeger(L, -3);
-    pCon->log_file = lua_tolstring(L, -2, NULL);
-    pCon->log_path = lua_tolstring(L, -1, NULL);
+    pCon->ip = lua_tolstring(L, -3, NULL);
+    pCon->port = (int)lua_tointeger(L, -2);
+    pCon->log_file = lua_tolstring(L, -1, NULL);
 
 
     lua_close(L);
@@ -76,11 +74,13 @@ int main(int argc, char *argv[])
 {
     config conf;
 
+    printf("%s\n", argv[1]);
     if (argv[1] == NULL)
         LOG_PRINT("config file is invalid");
     char *config_file = argv[1];
     int ret = load_config(config_file, &conf);
 
+    set_log_file(conf.log_file);
     signal(SIGPIPE, SIG_IGN);
 
     int serv_sock, clnt_sock;
@@ -122,6 +122,8 @@ int main(int argc, char *argv[])
     if (ret == -1 ){
         LOG_PRINT("listen error, errno=%d\n", errno);
     }
+
+    LOG_PRINT("server start\n");
 
     while(1){
         clnt_adr_sz = sizeof(clnt_adr);

@@ -8,7 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-void set_log_path(char *log_path);
+void set_log_file(char *log_file);
 void log_print(char* filename, int line, char *fmt,...);
 
 #define LOG_PRINT(...) log_print(__FILE__, __LINE__, __VA_ARGS__ )

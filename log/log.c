@@ -1,12 +1,12 @@
-#include "log.h"
 #include <errno.h>
-#include <utils.h>
+#include "log.h"
+#include "utils.h"
 FILE *fp ;
 static int SESSION_TRACKER = 0; //Keeps track of session
-static char* LOG_PATH = NULL;
+static char* LOG_FILE = NULL;
 
-void set_log_path(char *log_path){
-    LOG_PATH = log_path;
+void set_log_file(char *log_file){
+    LOG_FILE = log_file;
 }
 
 char* print_time()
@@ -39,14 +39,15 @@ void log_print(char* filename, int line, char *fmt,...)
     char *work_dir = get_current_dir_name();
     char *log_path = NULL;
     size_t len;
-    len = strcat2(&log_path, "../", NULL);
+    len = strcat2(&log_path, work_dir, "/logger/", LOG_FILE, NULL);
     if (log_path==NULL)
         return;
     printf("log_path == %s\n", log_path);
+
     if(SESSION_TRACKER > 0)
-        fp = fopen ("./logger/log.txt","a+");
+        fp = fopen (log_path, "a+");
     else
-        fp = fopen ("./logger/log.txt","w+");
+        fp = fopen (log_path, "w+");
 
     if (fp == NULL){
         perror("fp is null due to");
