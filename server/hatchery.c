@@ -10,11 +10,7 @@
 #include <errno.h>
 #include "common.h"
 #include "log.h"
-
-#include "lua.h"
-#include "lualib.h"
-#include "lauxlib.h"
-
+#include "utils.h"
 
 enum{
     TRUE = 0,
@@ -31,44 +27,6 @@ void send_msg(char *msg, int len);
 int clnt_cnt = 0;
 int clnt_socks[MAX_CLNT];
 pthread_mutex_t mutx;
-
-int load_config(const char *pchConfig, config *pCon){
-    lua_State *L = luaL_newstate();
-    if (NULL == L)
-        return -1;
-
-    luaL_openlibs(L);
-
-    FILE *fp = fopen(pchConfig, "r");
-    if( fp == NULL){
-        printf("%s\n",pchConfig);
-        perror("open config lua failed :");
-        return -1;
-    }
-
-    fseek(fp, 0, SEEK_END);
-    long fsize = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    char *string = (char*)malloc( (unsigned long)fsize+ 1);
-    fread(string, (unsigned long)fsize, 1, fp);
-    fclose(fp);
-    string[fsize]=0;
-    if(luaL_loadbuffer(L, string, strlen(string), "line") || lua_pcall(L, 0, 0,0)){
-        LOG_PRINT("cannot run config.file:%s\n", lua_tostring(L, -1));
-    }
-
-    lua_getglobal(L, "ip");
-    lua_getglobal(L, "port");
-    lua_getglobal(L, "log_file");
-
-    pCon->ip = lua_tolstring(L, -3, NULL);
-    pCon->port = (int)lua_tointeger(L, -2);
-    pCon->log_file = lua_tolstring(L, -1, NULL);
-
-
-    lua_close(L);
-    return 0;
-}
 
 int main(int argc, char *argv[])
 {
@@ -92,11 +50,13 @@ int main(int argc, char *argv[])
 
     pthread_mutex_init(&mutx, NULL);
 
+    /*
     struct sigaction act;
     act.sa_handler = read_childproc;
     sigemptyset(&act.sa_mask);
     act.sa_flags = 0;
     int state = sigaction(SIGCHLD, &act, 0);
+    */
 
     char buf[BUF_SIZE];
     socklen_t adr_sz;
@@ -122,6 +82,15 @@ int main(int argc, char *argv[])
     if (ret == -1 ){
         LOG_PRINT("listen error, errno=%d\n", errno);
     }
+
+    int server_pid = getpid();
+    int length = snprintf(NULL, 0, "%d", server_pid);
+    char *str_server_pid = (char*)malloc(length + 1);
+    snprintf(str_server_pid, length+1, "%d", server_pid);
+    char *buff = NULL;
+    strcat2(&buff, str_server_pid, NULL);
+    free(str_server_pid);
+    write_to_file(conf.daemon, buff);
 
     LOG_PRINT("server start\n");
 
