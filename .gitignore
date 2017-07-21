@@ -14,5 +14,4 @@ CMakeCache*.*
 MakeFile
 Makefile
 bin/*.*
-.ycm*.*
 *.a

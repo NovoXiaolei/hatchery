@@ -124,33 +124,6 @@ int main(int argc, char *argv[])
     }
 
     while(1){
-        /*
-           adr_sz = sizeof(clnt_adr);
-           clnt_sock = accept(serv_sock, (struct sockaddr*)&clnt_adr, &adr_sz);
-           if(clnt_sock==-1)
-           continue;
-           else
-           LOG_PRINT("new client connected");
-           pid = fork();
-           if (pid == -1){
-           close(clnt_sock);
-           continue;
-           }
-
-           if(pid==0){
-        //子进程中运行
-        close(serv_sock);
-        while((str_len==read(clnt_sock, buf, BUF_SIZE))!=0){
-        write(clnt_sock, buf, str_len);
-        }
-
-        close(clnt_sock);
-        LOG_PRINT("client disconnected");
-        return 0;
-        }
-        else
-        close(clnt_sock);
-        */
         clnt_adr_sz = sizeof(clnt_adr);
         clnt_sock = accept(serv_sock, (struct sockaddr*)&clnt_adr, &clnt_adr_sz);
 
@@ -161,10 +134,7 @@ int main(int argc, char *argv[])
         pthread_create(&t_id, NULL, handle_clnt, (void*)&clnt_sock);
         pthread_detach(t_id);
         printf("Connected client IP:%s \n", inet_ntoa(clnt_adr.sin_addr));
-
     }
-
-
     close(serv_sock);
     return 0;
 }
