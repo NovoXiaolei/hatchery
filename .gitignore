@@ -6,7 +6,6 @@ cscope*.*
 logger/*.*
 test/mysql_test
 test/select-test
-*lua*
 cmake_install.*
 CMakeFiles/*.*
 CMakeFiles
