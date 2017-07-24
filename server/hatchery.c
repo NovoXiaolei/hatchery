@@ -51,12 +51,12 @@ int main(int argc, char *argv[])
     pthread_mutex_init(&mutx, NULL);
 
     /*
-    struct sigaction act;
-    act.sa_handler = read_childproc;
-    sigemptyset(&act.sa_mask);
-    act.sa_flags = 0;
-    int state = sigaction(SIGCHLD, &act, 0);
-    */
+       struct sigaction act;
+       act.sa_handler = read_childproc;
+       sigemptyset(&act.sa_mask);
+       act.sa_flags = 0;
+       int state = sigaction(SIGCHLD, &act, 0);
+       */
 
     char buf[BUF_SIZE];
     socklen_t adr_sz;
@@ -84,12 +84,13 @@ int main(int argc, char *argv[])
     }
 
     int server_pid = getpid();
-    int length = snprintf(NULL, 0, "%d", server_pid);
-    char *str_server_pid = (char*)malloc(length + 1);
-    snprintf(str_server_pid, length+1, "%d", server_pid);
+    char str_server_pid[100];
+    sprintf(str_server_pid, "%d", server_pid);
     char *buff = NULL;
-    strcat2(&buff, str_server_pid, NULL);
-    free(str_server_pid);
+    strcat2(&buff, str_server_pid, "\n", NULL);
+    printf("server pid = %s\n", buff);
+    int len = sizeof(buff);
+
     write_to_file(conf.daemon, buff);
 
     LOG_PRINT("server start\n");

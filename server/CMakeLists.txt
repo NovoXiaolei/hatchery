@@ -15,8 +15,10 @@ include_directories(../lua)
 include_directories(../utils)
 
 link_directories(../lua)
-add_library(LogFunctions STATIC ../log/log.c)
 add_library(UtilsFuncitons STATIC ../utils/utils.c)
+target_link_libraries(UtilsFuncitons lua)
+
+add_library(LogFunctions STATIC ../log/log.c)
 
 aux_source_directory(. DIR_SRCS)
 

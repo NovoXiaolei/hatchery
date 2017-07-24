@@ -22,9 +22,12 @@ size_t strcat2(char **dst_out, ...){
         len+=strlen(src);
     }
     va_end(argp);
-    if(len==0) return 0;
+    if(len==0)
+        return 0;
+
     dst = (char*)malloc(sizeof(char)*(len+1));
-    if(dst==NULL) return -1;
+    if(dst==NULL)
+        return -1;
     dst_p = dst;
 
     va_start(argp, dst_out);
@@ -85,9 +88,8 @@ int write_to_file(const char *pchFilePath, const char* buffer){
     if (fp == NULL)
         perror("fp is invalid due to");
 
-    fwrite(buffer, sizeof(char), sizeof(buffer), fp);
+    fwrite(buffer, sizeof(char), strlen(buffer), fp);
+    fflush(fp);
     fclose(fp);
     return 0;
 }
-
-
